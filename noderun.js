@@ -2,8 +2,11 @@ console.log("-------");
 console.log("NodeRun");
 console.log("-------");
 
+require('./utils/utils');
+
 var fs = require('fs'),
-	system = require('./utils/system');
+	system = require('./utils/system'),
+	Logger = require('./utils/logger');
 
 if ( process.argv.length <= 2 )
 {
@@ -23,18 +26,19 @@ if ( !/\.js$/.test(script) )
 // Check if script exists
 if ( !fs.existsSync(script) )
 {
-	console.log("NodeRun:: could not find: " + script);
+	console.log("NodeRun:: could not find", script);
 	process.exit();
 }
 
 function start(){
-	console.log("NodeRun:: starting:", script);
+	console.log("NodeRun:: starting", script);
+	var logger = new Logger(script);
 	system.run({
 		cmd: "node",
 		params: process.argv.slice(2),
 		options: {detached: true},
 		onsuccess: function(stdout){
-			console.log("NodeRun:: process exited expectedly.");
+			console.log("NodeRun:: process exited expectedly");
 			console.log("NodeRun:: restarting");
 			setTimeout(start, 1000);
 		},
@@ -44,9 +48,7 @@ function start(){
 			console.log("NodeRun:: restarting");
 			setTimeout(start, 1000);
 		},
-		onstdout: function(data){
-			console.log(data.toString().replace(/\r?\n?$/, ""));
-		}
+		onstdout: logger.log
 	});
 }
 start();

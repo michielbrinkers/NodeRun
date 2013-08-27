@@ -23,7 +23,7 @@ module.exports = function(script){
 		var str = data.toString();
 		if (str.indexOf("NODERUN::") != -1 )
 		{
-			console.log(str.substring(str.indexOf("NODERUN::")+9));
+			console.log(str.substring(str.indexOf("NODERUN::")+9).replace(/\r?\n?$/, ""));
 		}
 
 		fs.appendFile(file, data, function (error) {
